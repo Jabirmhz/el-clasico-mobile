@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,6 +34,62 @@ jobs:
           cp index.html game/www/index.html
           cd game
           cordova platform add android@13
+
+      - name: Create football app icon
+        run: |
+          python3 -m pip install Pillow
+          python3 - <<'PY'
+          from PIL import Image, ImageDraw
+          import os, math
+
+          os.makedirs("game/res", exist_ok=True)
+          im = Image.new("RGB", (512, 512), "#0b1d12")
+          d = ImageDraw.Draw(im)
+
+          d.rounded_rectangle((20, 20, 492, 492), radius=100,
+                              fill="#176b35")
+          d.ellipse((76, 76, 436, 436),
+                    fill="#ffffff", outline="#ffd54a", width=12)
+
+          cx, cy, r = 256, 256, 76
+          pts = [
+              (cx + r * math.cos(math.radians(ang)),
+               cy + r * math.sin(math.radians(ang)))
+              for ang in [-90, -18, 54, 126, 198]
+          ]
+          d.polygon(pts, fill="#111111")
+
+          for ang in [-90, -18, 54, 126, 198]:
+              x = cx + 145 * math.cos(math.radians(ang))
+              y = cy + 145 * math.sin(math.radians(ang))
+              d.line((cx + 65 * math.cos(math.radians(ang)),
+                      cy + 65 * math.sin(math.radians(ang)),
+                      x, y), fill="#111111", width=12)
+
+          im.save("game/res/icon.png")
+          PY
+
+      - name: Configure Android app icon
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("game/config.xml")
+          s = p.read_text()
+          entry = '''
+            <platform name="android">
+              <icon src="res/icon.png" />
+            </platform>
+          '''
+          if '</widget>' not in s:
+              raise SystemExit("Could not find widget closing tag")
+          s = s.replace('</widget>', entry + '\n</widget>')
+          p.write_text(s)
+          PY
+
+      - name: Build APK
+        run: |
+          cd game
           cordova build android --debug
 
       - name: Upload APK
