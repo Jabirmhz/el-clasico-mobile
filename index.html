@@ -162,7 +162,20 @@ S={mode:play?'play':'menu',clock:0,dur:O.dur,sc:[0,0],last:0,auto:0,hold:0,gt:0,
 function kickoff(ts){B.owner=null;B.x=0;B.y=R;B.z=0;B.vx=B.vy=B.vz=0;
 for(const p of P){const D=p.s?-1:1;p.x=D*Math.min(p.hx*D,-3);p.z=p.hz;p.vx=p.vz=0;p.fx=D;p.fz=0;p.cd=p.stn=p.hold=p.cel=p.tk=p.dive=0}
 const t=A[ts][9];t.x=-1.2*(ts?-1:1);t.z=0;B.owner=t;B.lp=t;S.last=ts;S.hold=1;ctrl=A[0][9]}
-function scored(side){S.sc[side]++;S.mode='goal';S.gt=2.8;S.gs=side;banner('GOAL! '+CL[CLB[side]].n,2500);A[side].forEach(p=>p.cel=2.6);B.owner=null}
+function scored(side){
+  S.sc[side]++;
+  S.mode='goal';
+  S.gt=2.8;
+  S.gs=side;
+  banner('GOAL! '+CL[CLB[side]].n,2500);
+  A[side].forEach(p=>p.cel=2.6);
+  B.owner=null;
+
+  if (typeof GameSound !== 'undefined') {
+    GameSound.goal();
+  }
+}
+
 function over(){S.mode='over';const[a,b]=S.sc,w=a>b?CL[CLB[0]].n+' win!':b>a?CL[CLB[1]].n+' win!':'Draw';
 ovShow(`<h1>FULL TIME</h1><h1>${CL[CLB[0]].a} ${a} - ${b} ${CL[CLB[1]].a}</h1><div>${w}</div><div class=r><button class=go data-a=again>Play Again</button><button data-a=menu>Main Menu</button></div>`)}
 /* ===== BALL ACTIONS ===== */
