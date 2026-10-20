@@ -28,12 +28,15 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova@12
 
+      
       - name: Create Android app
         run: |
           cordova create game com.elclasicomobile.game "El Clasico Mobile"
           cp index.html game/www/index.html
+          cp professional-soccer-standing.glb game/www/professional-soccer-standing.glb
           cd game
           cordova platform add android@13
+
 
       - name: Create football app icon
         run: |
