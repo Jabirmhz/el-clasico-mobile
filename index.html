@@ -167,7 +167,21 @@ function over(){S.mode='over';const[a,b]=S.sc,w=a>b?CL[CLB[0]].n+' win!':b>a?CL[
 ovShow(`<h1>FULL TIME</h1><h1>${CL[CLB[0]].a} ${a} - ${b} ${CL[CLB[1]].a}</h1><div>${w}</div><div class=r><button class=go data-a=again>Play Again</button><button data-a=menu>Main Menu</button></div>`)}
 /* ===== BALL ACTIONS ===== */
 function take(p){B.owner=p;B.vx=B.vy=B.vz=0;S.last=p.s;B.lp=p;p.dec=rnd(.3,.6);if(p.gk)p.hold=1.1;else if(p.s===0)ctrl=p}
-function kick(p,vx,vy,vz){B.owner=null;B.vx=vx;B.vy=vy;B.vz=vz;p.cd=.45;p.kick=.3;S.last=p.s;B.lp=p}
+function kick(p,vx,vy,vz){
+  B.owner=null;
+  B.vx=vx;
+  B.vy=vy;
+  B.vz=vz;
+  p.cd=.45;
+  p.kick=.3;
+  S.last=p.s;
+  B.lp=p;
+
+  if (typeof GameSound !== 'undefined') {
+    GameSound.kick();
+  }
+}
+
 function shoot(p){const D=p.s?-1:1,gx=D*HL,gk=A[1-p.s][0],hum=p===ctrl&&hy(inp.x,inp.z)>.3;
 let az=hum?cl(inp.z*4.2,-4.2,4.2):(gk.z>0?-3.6:3.6);const dd0=hy(gx-p.x,p.z);
 az+=rnd(-1,1)*(100-p.d[4])/100*(2+dd0/15)*(p.s?AC[O.diff]:1);
